@@ -1,0 +1,12 @@
+/* External Style Sheet */
+/* Pen Styles */
+
+div, p {margin: 0; border: 0; font-size: 1.20em; width: 100%;}
+
+.information {font-size: 1.15em; color: black;}
+
+.button {}
+
+#eraser {color: red; font-weight: bold;}
+
+#eraser:hover {color: green;}

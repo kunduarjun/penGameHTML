@@ -1,0 +1,466 @@
+<! DOCTYPE html>
+
+<html>
+
+<head>
+
+	<meta charset = "uft-8">
+
+	<title> 
+
+		Take Two: Logo Turtle Simulation 
+	
+	</title>
+
+	<link rel = "stylesheet" type = "text/css" href = "penStyles.css">
+
+	<script>
+
+		// Initialize the setting of the pen (up as opposed to down).
+		// Initialize the direction that the pen is facing (initially facing right).
+		// Boolean variable indicating the eraser setting is initialized to false.
+		var pen_Setting = "up";
+		var pen_Direction = "right";
+		var eraser = false;
+
+		// Declare variables for the grid size prompt and for the integer size of the grid.
+		// Initialize int_Size to be the integer 0, which will be changed upon load of the program.
+		var grid_Size_Prompt;
+		var int_Size = 0;
+
+		// Initialize the x and y co-ordinates of the pen to be zeros.
+		var pen_X_Pos = 0;
+		var pen_Y_Pos = 0;
+
+		// Basic functionality.
+		function setDR() {pen_Direction = "right";}
+		function setDL() {pen_Direction = "left";}
+		function setDN() {pen_Direction = "north";}
+		function setDS() {pen_Direction = "south";}
+		function setPU() {pen_Setting = "up";}
+		function resetX() {pen_X_Pos = 0;}
+		function resetY() {pen_Y_Pos = 0;}
+
+		// Partial function; returns grid to default settings. Used in combination with the clear_XY method.
+		function clear() {setPU(); setDR(); resetX(); resetY();} 
+
+		// Global variable for the array
+		var gridArray = [];
+
+		// beforeImage is a variable which essentially aids in ensuring that when the pen is set to up and the pen is in motion, a square remains unchanged before and after the pen lands on that square. 
+		// When the pen is up, motion should be free and unrecorded. This variable aids in ensuring that functionality.
+		// Program starts off with this variable being initialized to an empty square. 
+		var beforeImage = "⛶";
+		function resetBeforeImage() {beforeImage = "⛶";}
+
+		// Functionality which will help us out when the pen is facing up and we want motion to be free.
+		function eraser_Set_False() {eraser = false;} 
+		function eraser_Set_True() {eraser = true; beforeImage = "⛶";} // When we set eraser to true, the current square's "beforeImage" is set to the empty square. 
+		function setPD() {pen_Setting = "down"; beforeImage = "⛝";} // When we set the pen down, the current square's "beforeImage" is set to the marked square.
+
+		// Getter method for the status.
+		function get_Status()
+
+			{
+
+				var inner_Status = document.getElementById("status");
+
+				if (eraser === false)
+				{
+					inner_Status.innerHTML = "Status: Pen is currently " + pen_Setting + "," + " facing " + pen_Direction + ".";
+
+					if (pen_Setting === "up") {inner_Status.innerHTML += " This means that movement by pen is not being marked."; }
+					else if (pen_Setting === "down") {inner_Status.innerHTML += " This means that movement by pen is being marked."; }
+				}
+
+				else if (eraser === true)
+				{
+					inner_Status.innerHTML = "Status: Eraser is currently in use, facing " + pen_Direction + ".";
+				}
+
+			}
+
+		// Getter method for the co-ordinates.
+		function get_Coordinates()
+
+			{
+
+				var inner_Coordinates = document.getElementById("coordinates");
+				inner_Coordinates.innerHTML = "X coordinate: " + pen_X_Pos + ". Y coordinate: " + pen_Y_Pos + ".";
+				
+			}
+
+		// Move function.
+		// outer-most if and else-if statements are dependent on what direction the pen/eraser is facing. Out-of-bounds errors are also prevented through checking where the pen/eraser is on the board.
+		// inner-most if and else-if statements are dependent on the pen/eraser status, and dictates what should happen to the board after every move.
+		function move() 
+			
+			{
+			if ((pen_Direction === "right") && (pen_X_Pos < (int_Size - 1)))
+			{
+				if (eraser === true)
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛶";
+					pen_X_Pos += 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛾";
+				}
+
+				else if (pen_Setting === "up")
+				{	
+					gridArray[pen_Y_Pos][pen_X_Pos] = beforeImage;
+					pen_X_Pos += 1;
+					beforeImage = gridArray[pen_Y_Pos][pen_X_Pos];
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+					// Remember free movement
+				}
+
+				else if (pen_Setting === "down")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛝";
+					pen_X_Pos += 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+				}
+			}
+
+			else if ((pen_Direction === "left") && (pen_X_Pos > 0))
+			{
+				if (eraser === true)
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛶";
+					pen_X_Pos -= 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛾";
+				}
+
+				else if (pen_Setting === "up")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = beforeImage;
+					pen_X_Pos -= 1;
+					beforeImage = gridArray[pen_Y_Pos][pen_X_Pos];
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+					// Remember free movement
+				}
+
+				else if (pen_Setting === "down")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛝";
+					pen_X_Pos -= 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+				}
+			}
+
+			else if ((pen_Direction === "south") && (pen_Y_Pos < (int_Size - 1)))
+			{
+
+				if (eraser === true)
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛶";
+					pen_Y_Pos += 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛾";
+				}
+
+				else if (pen_Setting === "up")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = beforeImage;
+					pen_Y_Pos += 1;
+					beforeImage = gridArray[pen_Y_Pos][pen_X_Pos];
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+					// Remember free movement
+				}
+
+				else if (pen_Setting === "down")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛝";
+					pen_Y_Pos += 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+				}
+			}
+	
+			else if ((pen_Direction === "north") && (pen_Y_Pos > 0))
+			{
+				if (eraser === true)
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛶";
+					pen_Y_Pos -= 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛾";
+				}
+
+				else if (pen_Setting === "up")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = beforeImage;
+					pen_Y_Pos -= 1;
+					beforeImage = gridArray[pen_Y_Pos][pen_X_Pos];
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+					// Remember free movement
+				}
+
+				else if (pen_Setting === "down")
+				{
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⛝";
+					pen_Y_Pos -= 1;
+					gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+				}
+			}
+			
+			// Reprint the grid and update coordinates after every move.	
+			get_Coordinates();
+			printGrid();
+			}
+
+		// Registering Listeners.
+		function register_Listeners()
+
+			{
+
+				// Test for clicking the button that sets the direction to left.
+				var change_Direction_To_Left = document.getElementById("left");
+				change_Direction_To_Left.addEventListener("click", function () {change_Direction("left"); }, false);
+
+				// Test for clicking the button that sets the direction to right.
+				var change_Direction_To_Right = document.getElementById("right");
+				change_Direction_To_Right.addEventListener("click", function () {change_Direction("right"); }, false);
+
+				// Test for clicking the button that sets the direction to north.
+				var change_Direction_To_North = document.getElementById("north");
+				change_Direction_To_North.addEventListener("click", function () {change_Direction("north"); }, false);
+
+				// Test for clicking the button that sets the direction to south.
+				var change_Direction_To_North = document.getElementById("south");
+				change_Direction_To_North.addEventListener("click", function () {change_Direction("south"); }, false);
+
+				// Test for setting pen up.
+				var set_Pen_Up = document.getElementById("penUp");
+				set_Pen_Up.addEventListener("click", function () {pen_Set("up"); }, false);
+
+				// Test for setting pen down.
+				var set_Pen_Down = document.getElementById("penDown");
+				set_Pen_Down.addEventListener("click", function () {pen_Set("down"); }, false);
+
+				// Test for clearing board.
+				var clear_Board = document.getElementById("clear");
+				clear_Board.addEventListener("click", clear_XY, false);
+
+				// Eraser
+				var erase_Me = document.getElementById("eraser");
+				erase_Me.addEventListener("click", clean, false);
+
+				// Moves
+				var move_Me = document.getElementById("move");
+				move_Me.addEventListener("click", move, false);
+
+			}
+
+		// This function is called whenever we press the eraser button.
+		function clean ()
+		{
+			eraser_Set_True();
+			get_Status();
+			gridArray[pen_Y_Pos][pen_X_Pos] = "⛾";
+			printGrid();
+			
+		}
+
+		// This function resets the grid entirely.
+		// Also calls upon the clear function which was defined previously in the document.
+		// This function is called whenever we press the clear board button.
+		function clear_XY ()
+		{
+			resetBeforeImage();
+			eraser_Set_False();
+			clear();
+			createInitialGrid(int_Size);
+			get_Status();
+			get_Coordinates();
+		}
+
+		// Simple method to change the direction.
+		function change_Direction(direction)
+
+			{
+
+				if(direction === "left")
+
+					{
+						setDL();	
+					}
+
+				else if (direction === "right")
+
+					{
+						setDR();
+					}
+
+				else if (direction === "north")
+
+					{
+						setDN();
+					}
+
+				else if (direction === "south")
+
+					{
+						setDS();
+					}
+
+				get_Status();
+
+			}
+
+		// Simple method to change the pen status.
+
+		function pen_Set(input_Set)
+
+			{
+				
+				if (input_Set === "up")
+
+					{
+						setPU();
+					}
+
+				else if (input_Set = "down")
+
+					{
+						setPD();
+					}
+
+				eraser_Set_False();
+				get_Status();
+				gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+				printGrid();
+
+			}
+
+		// Test function for start, which will ask user for grid size.
+		function start() 
+
+			{
+
+				// As int_Grid is initialized to 0, this while loop will run at least once.
+				// If the user inputs a value that is not within the specified range, then this while loop will keep repeating.
+				while (!((int_Size >= 20) && (int_Size <= 50)))
+
+					{
+
+						grid_Size_Prompt = window.prompt("Please enter in a number between 20 and 50 to use as the grid size: ", "20");
+
+						int_Size = parseInt(grid_Size_Prompt);
+
+					}
+
+				// Grid size information won't change after a program is loaded.
+				var grid_Size_Information = document.getElementById("grid_size");
+				grid_Size_Information.innerHTML = "Grid Size: " + grid_Size_Prompt + " x " + grid_Size_Prompt + ".";
+
+				createInitialGrid(int_Size);
+
+			}
+
+		// This function is called after the user enters in a grid size that is within our boundaries. 
+		// This function is used to create a square of the size specified by the user.
+		// Grid is initialized to al empty squared, except the squared denoted by the pen's origin, which is in the top left corner.
+		function createInitialGrid(size)
+		
+		{
+
+		for(var i = 0; i < size; i++)
+			{
+			var gridRow = [];
+			for(var j = 0; j < size; j++)
+				{
+				gridRow[j] = "⛶";
+				}
+			gridArray[i] = gridRow;
+			}
+
+		gridArray[pen_Y_Pos][pen_X_Pos] = "⚿";
+		printGrid();
+
+		}
+		
+		// Function that is used to display the grid.
+		// This function is called by numerous other functions within our program.
+		function printGrid()
+
+		{
+
+		var Grid = document.getElementById("contentArea");
+		Grid.innerHTML = "";
+		for (var k = 0; k < int_Size; k++)
+			{
+			var Row = "<p>";
+			for (var u = 0; u < int_Size; u++)
+				{
+				Row = Row + gridArray[k][u];
+				}
+			Row = Row + "</p>";
+			Grid.innerHTML += Row;
+			}
+
+		}
+		
+		// Test function for registering listeners on load.
+		window.addEventListener("load", register_Listeners, false);
+
+		// Test function for prompting the user for grid size on load.
+		window.addEventListener("load", start, false);
+
+		// Test function for giving the status of the pen on load.
+		window.addEventListener("load", get_Status, false);
+
+		// Test function for giving the x and y coordinates of the pen on load.
+		window.addEventListener("load", get_Coordinates, false);
+
+	</script>
+
+</head>
+
+<body>
+
+	<!-- Title -->
+	<h1> Mock Pen Game </h1>
+
+	<!-- Board -->
+	<div id = "contentArea"></div>
+
+	<br>
+
+	<!-- Buttons that provide functionality when pressed -->
+	<form>
+
+		<input id = "clear" type = "button" value = "Restart Portrait">
+		<input id = "move" type = "button" value = "Move">
+
+	</form>
+
+	<form>
+
+		<input id = "penDown" type = "button" value = "Pen Down">
+		<input id = "penUp" type = "button" value = "Pen Up">
+		<input id = "eraser" type = "button" value = "Use Eraser">
+
+	</form>
+
+	<form>
+
+		<input id = "right" type = "button" value = "Direction: Right">
+		<input id = "left" type = "button" value = "Direction: Left">
+		<input id = "north" type = "button" value = "Direction: North">
+		<input id = "south" type = "button" value = "Direction: South">
+
+	</form>
+
+	<!-- Status will be displayed here -->
+	<p id = "status" class = "information"></p>
+
+	<!-- Pen co-ordinates will be displayed here -->
+	<p id = "coordinates" class = "information"></p>
+
+	<!-- Grid size information -->
+	<p id = "grid_size" class = "information"></p>
+
+	<!-- Legend -->
+	<p class = "information"> Legend: ⛶ >> Empty Square, ⚿ >> Pen in use, ⛾ >> Eraser in use, ⛝ >> Marked Square. </p>
+
+</body>
+
+</html>
