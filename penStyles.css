@@ -7,6 +7,8 @@ div, p {margin: 0; border: 0; font-size: 1.20em; width: 100%;}
 
 .button {}
 
-#eraser {color: red; font-weight: bold;}
+#clear {color: red; font-weight: bold;}
 
-#eraser:hover {color: green;}
+#clear:hover {color: green;}
+
+input {border: solid purple;}
